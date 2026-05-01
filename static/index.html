@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Learn Python</title>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #0d1117;
+    color: #e6edf3;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    background: #161b22;
+    border-bottom: 1px solid #30363d;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    overflow-x: auto;
+    flex-shrink: 0;
+    height: 48px;
+  }
+  nav .logo {
+    font-weight: 700;
+    color: #58a6ff;
+    margin-right: 16px;
+    font-size: 15px;
+    white-space: nowrap;
+  }
+  nav button {
+    background: none;
+    border: none;
+    color: #8b949e;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    white-space: nowrap;
+    transition: background 0.15s, color 0.15s;
+  }
+  nav button:hover { background: #21262d; color: #e6edf3; }
+  nav button.active { background: #1f6feb; color: #fff; }
+
+  /* ── MAIN ── */
+  main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* ── LESSON PANEL ── */
+  #lesson-panel {
+    width: 40%;
+    min-width: 280px;
+    border-right: 1px solid #30363d;
+    overflow-y: auto;
+    padding: 28px 32px;
+    flex-shrink: 0;
+  }
+  #lesson-panel h1 { font-size: 20px; margin-bottom: 20px; color: #58a6ff; }
+  #lesson-content h1 { font-size: 18px; color: #e6edf3; margin: 24px 0 10px; }
+  #lesson-content h2 { font-size: 15px; color: #58a6ff; margin: 20px 0 8px; border-bottom: 1px solid #21262d; padding-bottom: 4px; }
+  #lesson-content p  { font-size: 14px; line-height: 1.7; color: #c9d1d9; margin-bottom: 12px; }
+  #lesson-content ul, #lesson-content ol { padding-left: 20px; margin-bottom: 12px; }
+  #lesson-content li { font-size: 14px; line-height: 1.7; color: #c9d1d9; margin-bottom: 4px; }
+  #lesson-content code {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-family: "JetBrains Mono", "Fira Code", monospace;
+    font-size: 12px;
+    color: #79c0ff;
+  }
+  #lesson-content pre {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    margin-bottom: 14px;
+  }
+  #lesson-content pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 13px;
+    color: #e6edf3;
+  }
+  #lesson-content strong { color: #e6edf3; }
+
+  /* ── RIGHT PANEL ── */
+  #right-panel {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  #editor-toolbar {
+    background: #161b22;
+    border-bottom: 1px solid #30363d;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  #editor-toolbar span {
+    font-size: 12px;
+    color: #8b949e;
+    flex: 1;
+  }
+
+  #run-btn {
+    background: #238636;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  #run-btn:hover { background: #2ea043; }
+  #run-btn:active { background: #1a7f2e; }
+  #run-btn:disabled { background: #21262d; color: #484f58; cursor: default; }
+
+  #clear-btn {
+    background: none;
+    border: 1px solid #30363d;
+    color: #8b949e;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  #clear-btn:hover { background: #21262d; color: #e6edf3; }
+
+  #editor-container {
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  /* ── OUTPUT ── */
+  #output-panel {
+    border-top: 1px solid #30363d;
+    background: #0d1117;
+    flex-shrink: 0;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+  }
+  #output-header {
+    background: #161b22;
+    border-bottom: 1px solid #30363d;
+    padding: 6px 16px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #8b949e;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  #output-status {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #30363d;
+    transition: background 0.2s;
+  }
+  #output-status.ok    { background: #3fb950; }
+  #output-status.error { background: #f85149; }
+  #output-status.running { background: #d29922; }
+
+  #output-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 16px;
+    font-family: "JetBrains Mono", "Fira Code", monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+  #output-content.has-error { color: #f85149; }
+
+  #empty-state {
+    color: #484f58;
+    font-style: italic;
+    font-family: -apple-system, sans-serif;
+    font-size: 13px;
+  }
+
+  /* ── LOADING ── */
+  #loading {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #0d1117;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: #8b949e;
+  }
+  #loading.visible { display: flex; }
+</style>
+</head>
+<body>
+
+<div id="loading" class="visible">Loading...</div>
+
+<nav>
+  <div class="logo">🐍 Learn Python</div>
+  <div id="nav-tabs"></div>
+</nav>
+
+<main>
+  <div id="lesson-panel">
+    <div id="lesson-content"></div>
+  </div>
+
+  <div id="right-panel">
+    <div id="editor-toolbar">
+      <span>Cmd+Enter to run</span>
+      <button id="clear-btn">Clear</button>
+      <button id="run-btn">▶ Run</button>
+    </div>
+    <div id="editor-container"></div>
+    <div id="output-panel">
+      <div id="output-header">
+        <div id="output-status"></div>
+        Output
+      </div>
+      <div id="output-content">
+        <span id="empty-state">Run your code to see output here.</span>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+let editor = null;
+let lessons = [];
+let currentLesson = null;
+
+const STARTERS = {
+  "01_variables_and_types": `# Variables & Types — try it yourself
+a = [1, 2, 3]
+b = a           # b points to the SAME list
+a.append(99)
+print("a:", a)
+print("b:", b)   # what do you expect?
+print("same object?", id(a) == id(b))
+`,
+  "02_control_flow": `# Control Flow — try it yourself
+words = ["hi", "hello", "world", "python", "ok"]
+long_words = [w for w in words if len(w) > 4]
+print(long_words)
+
+# FizzBuzz
+for n in range(1, 21):
+    if n % 15 == 0:
+        print("FizzBuzz")
+    elif n % 3 == 0:
+        print("Fizz")
+    elif n % 5 == 0:
+        print("Buzz")
+    else:
+        print(n)
+`,
+  "03_functions": `# Functions — try it yourself
+def make_multiplier(n):
+    def multiplier(x):
+        return x * n
+    return multiplier
+
+triple = make_multiplier(3)
+print(triple(10))   # 30
+print(triple(7))    # 21
+
+# Try writing your own:
+def make_adder(n):
+    pass  # your code here
+
+add5 = make_adder(5)
+# print(add5(10))  # should print 15
+`,
+  "04_lists_and_loops": `# Lists & Loops — try it yourself
+import copy
+
+# Shallow copy vs deep copy
+original = [[1, 2], [3, 4]]
+shallow = original.copy()
+deep = copy.deepcopy(original)
+
+shallow[0].append(99)
+deep[0].append(88)
+
+print("original:", original)
+print("shallow: ", shallow)
+print("deep:    ", deep)
+`,
+  "05_dicts_and_sets": `# Dicts & Sets — try it yourself
+text = "the cat sat on the mat the cat sat"
+counts = {}
+for word in text.split():
+    counts[word] = counts.get(word, 0) + 1
+
+# Sort by count, highest first
+for word, count in sorted(counts.items(), key=lambda x: -x[1]):
+    print(f"{word:10} {count}")
+`,
+  "06_classes_and_objects": `# Classes — try it yourself
+class BankAccount:
+    def __init__(self, owner, balance=0):
+        self.owner = owner
+        self.balance = balance
+
+    def deposit(self, amount):
+        self.balance += amount
+
+    def withdraw(self, amount):
+        if amount > self.balance:
+            raise ValueError(f"Need {amount}, have {self.balance}")
+        self.balance -= amount
+
+    def __repr__(self):
+        return f"BankAccount({self.owner}, ${self.balance:.2f})"
+
+account = BankAccount("Jack", 100)
+account.deposit(75)
+account.withdraw(30)
+print(account)
+`,
+  "07_error_handling": `# Error Handling — try it yourself
+class InsufficientFundsError(Exception):
+    def __init__(self, balance, amount):
+        super().__init__(f"Cannot withdraw ${amount}: balance is ${balance}")
+
+def withdraw(balance, amount):
+    if amount > balance:
+        raise InsufficientFundsError(balance, amount)
+    return balance - amount
+
+try:
+    result = withdraw(100, 250)
+except InsufficientFundsError as e:
+    print(f"Caught: {e}")
+`,
+  "08_modules": `# Modules — try it yourself
+import json
+from datetime import datetime, timedelta
+from collections import Counter
+
+# JSON round-trip
+data = {"name": "Jack", "scores": [95, 87, 92], "active": True}
+json_str = json.dumps(data, indent=2)
+print(json_str)
+restored = json.loads(json_str)
+print("Round-trip ok:", data == restored)
+
+# Date math
+now = datetime.now()
+print(f"Today: {now.strftime('%A, %B %d %Y')}")
+print(f"In 30 days: {(now + timedelta(days=30)).date()}")
+
+# Counter
+text = "python programming is pretty powerful"
+top3 = Counter(text.replace(" ", "")).most_common(3)
+print(f"Top 3 chars: {top3}")
+`,
+};
+
+async function loadLessons() {
+  const res = await fetch("/api/lessons");
+  lessons = await res.json();
+
+  const nav = document.getElementById("nav-tabs");
+  lessons.forEach((lesson, i) => {
+    const btn = document.createElement("button");
+    btn.textContent = `${lesson.num} ${lesson.title}`;
+    btn.onclick = () => selectLesson(i);
+    btn.dataset.index = i;
+    nav.appendChild(btn);
+  });
+
+  if (lessons.length > 0) selectLesson(0);
+  document.getElementById("loading").classList.remove("visible");
+}
+
+function selectLesson(index) {
+  currentLesson = lessons[index];
+
+  // Update nav
+  document.querySelectorAll("nav button[data-index]").forEach((b, i) => {
+    b.classList.toggle("active", i === index);
+  });
+
+  // Render lesson markdown
+  document.getElementById("lesson-content").innerHTML =
+    marked.parse(currentLesson.content);
+
+  // Load starter code
+  const starter = STARTERS[currentLesson.id] || "# Write your Python here\nprint('hello!')\n";
+  if (editor) editor.setValue(starter);
+
+  // Clear output
+  clearOutput();
+}
+
+async function runCode() {
+  const code = editor.getValue();
+  if (!code.trim()) return;
+
+  const btn = document.getElementById("run-btn");
+  const status = document.getElementById("output-status");
+  const output = document.getElementById("output-content");
+
+  btn.disabled = true;
+  btn.textContent = "Running...";
+  status.className = "running";
+  output.className = "";
+  output.textContent = "";
+
+  try {
+    const res = await fetch("/api/run", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code }),
+    });
+    const data = await res.json();
+
+    if (data.stderr) {
+      output.className = "has-error";
+      output.textContent = data.stderr;
+      status.className = "error";
+    } else {
+      output.textContent = data.stdout || "(no output)";
+      status.className = "ok";
+    }
+  } catch (e) {
+    output.className = "has-error";
+    output.textContent = "Failed to connect to server.";
+    status.className = "error";
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "▶ Run";
+  }
+}
+
+function clearOutput() {
+  const output = document.getElementById("output-content");
+  output.className = "";
+  output.innerHTML = '<span id="empty-state">Run your code to see output here.</span>';
+  document.getElementById("output-status").className = "";
+}
+
+document.getElementById("run-btn").onclick = runCode;
+document.getElementById("clear-btn").onclick = () => {
+  if (editor) editor.setValue("");
+  clearOutput();
+};
+
+// Monaco setup
+require.config({ paths: { vs: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs" } });
+require(["vs/editor/editor.main"], function () {
+  editor = monaco.editor.create(document.getElementById("editor-container"), {
+    value: "",
+    language: "python",
+    theme: "vs-dark",
+    fontSize: 14,
+    fontFamily: '"JetBrains Mono", "Fira Code", monospace',
+    minimap: { enabled: false },
+    scrollBeyondLastLine: false,
+    lineNumbers: "on",
+    renderLineHighlight: "line",
+    padding: { top: 12, bottom: 12 },
+    automaticLayout: true,
+  });
+
+  // Cmd+Enter / Ctrl+Enter to run
+  editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, runCode);
+
+  loadLessons();
+});
+</script>
+</body>
+</html>
