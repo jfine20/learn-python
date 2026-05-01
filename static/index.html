@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Learn Python</title>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -150,10 +149,20 @@
   }
   #clear-btn:hover { background: #21262d; color: #e6edf3; }
 
-  #editor-container {
+  #editor {
     flex: 1;
-    overflow: hidden;
     min-height: 0;
+    width: 100%;
+    background: #1e1e1e;
+    color: #d4d4d4;
+    border: none;
+    outline: none;
+    resize: none;
+    font-family: "JetBrains Mono", "Fira Code", "Menlo", monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 14px 16px;
+    tab-size: 4;
   }
 
   /* ── OUTPUT ── */
@@ -242,7 +251,7 @@
       <button id="clear-btn">Clear</button>
       <button id="run-btn">▶ Run</button>
     </div>
-    <div id="editor-container"></div>
+    <textarea id="editor" spellcheck="false" autocorrect="off" autocapitalize="off"></textarea>
     <div id="output-panel">
       <div id="output-header">
         <div id="output-status"></div>
@@ -256,56 +265,98 @@
 </main>
 
 <script>
-let editor = null;
 let lessons = [];
 let currentLesson = null;
+const editor = {
+  getValue: () => document.getElementById("editor").value,
+  setValue: (v) => { document.getElementById("editor").value = v; }
+};
 
 const STARTERS = {
-  "01_variables_and_types": `# Variables & Types — try it yourself
+  "01_variables_and_types": `# Step 1 from the lesson — run this and read the output
+x = 5
+print("x =", x)
+
+# Now try the name tag concept:
 a = [1, 2, 3]
-b = a           # b points to the SAME list
+b = a           # b is a second name tag for the SAME list
 a.append(99)
-print("a:", a)
-print("b:", b)   # what do you expect?
+
+print("a =", a)
+print("b =", b)         # what do you expect?
 print("same object?", id(a) == id(b))
-`,
-  "02_control_flow": `# Control Flow — try it yourself
-words = ["hi", "hello", "world", "python", "ok"]
-long_words = [w for w in words if len(w) > 4]
-print(long_words)
 
-# FizzBuzz
+# -- YOUR TURN --
+# Try: make a real copy so changes to a don't affect b
+# Hint: use a.copy()
+`,
+
+  "02_control_flow": `# Step 1 — basic if/elif/else
+score = 85
+
+if score >= 90:
+    print("A")
+elif score >= 80:
+    print("B")
+elif score >= 70:
+    print("C")
+else:
+    print("F")
+
+# Try changing score to 95, 72, 50 and re-running
+
+# -- YOUR TURN --
+# FizzBuzz: print numbers 1-20
+# Replace multiples of 3 with "Fizz"
+# Replace multiples of 5 with "Buzz"
+# Replace multiples of both with "FizzBuzz"
+# Hint: use % (modulo) — 9 % 3 == 0 means divisible by 3
+
 for n in range(1, 21):
-    if n % 15 == 0:
-        print("FizzBuzz")
-    elif n % 3 == 0:
-        print("Fizz")
-    elif n % 5 == 0:
-        print("Buzz")
-    else:
-        print(n)
+    pass  # replace this with your logic
 `,
-  "03_functions": `# Functions — try it yourself
-def make_multiplier(n):
-    def multiplier(x):
-        return x * n
-    return multiplier
 
-triple = make_multiplier(3)
-print(triple(10))   # 30
-print(triple(7))    # 21
+  "03_functions": `# Step 1 — define and call a function
+def greet(name):
+    return f"Hello, {name}!"
 
-# Try writing your own:
+print(greet("Jack"))
+print(greet("Alice"))
+
+# Step 2 — functions are objects, pass them around
+def double(x):
+    return x * 2
+
+def apply(func, value):
+    return func(value)
+
+print(apply(double, 7))    # passes double as an argument
+
+# -- YOUR TURN --
+# Write make_adder(n) — returns a function that adds n to its argument
+# When done, uncomment the test lines below
+
 def make_adder(n):
-    pass  # your code here
+    pass  # write your function here
 
-add5 = make_adder(5)
-# print(add5(10))  # should print 15
+# add5 = make_adder(5)
+# print(add5(10))   # should print 15
+# print(add5(3))    # should print 8
 `,
-  "04_lists_and_loops": `# Lists & Loops — try it yourself
-import copy
 
-# Shallow copy vs deep copy
+  "04_lists_and_loops": `# Step 1 — list basics
+fruits = ["apple", "banana", "cherry"]
+print(fruits[0])     # first item
+print(fruits[-1])    # last item
+print(fruits[1:])    # from index 1 onward
+print(len(fruits))   # number of items
+
+# Step 2 — list comprehension
+squares = [x ** 2 for x in range(1, 6)]
+print(squares)
+
+# Step 3 — the shallow copy trap
+import copy
 original = [[1, 2], [3, 4]]
 shallow = original.copy()
 deep = copy.deepcopy(original)
@@ -313,78 +364,152 @@ deep = copy.deepcopy(original)
 shallow[0].append(99)
 deep[0].append(88)
 
-print("original:", original)
+print("original:", original)   # what do you expect?
 print("shallow: ", shallow)
 print("deep:    ", deep)
+
+# -- YOUR TURN --
+# Get only even numbers from 1-20 using a list comprehension
+evens = []  # replace with a comprehension
+print(evens)
 `,
-  "05_dicts_and_sets": `# Dicts & Sets — try it yourself
+
+  "05_dicts_and_sets": `# Step 1 — create and read a dict
+user = {"name": "Jack", "age": 28, "role": "founder"}
+print(user["name"])
+print(user.get("salary", 0))   # safe — returns 0 if missing
+
+# Step 2 — loop over a dict
+for key, value in user.items():
+    print(f"{key}: {value}")
+
+# Step 3 — count word frequencies
 text = "the cat sat on the mat the cat sat"
 counts = {}
 for word in text.split():
     counts[word] = counts.get(word, 0) + 1
+print(counts)
 
-# Sort by count, highest first
-for word, count in sorted(counts.items(), key=lambda x: -x[1]):
-    print(f"{word:10} {count}")
+# -- YOUR TURN --
+# Given this list of grades, find each student's average
+grades = [
+    ("alice", 90), ("bob", 85), ("alice", 92),
+    ("bob", 78), ("charlie", 95), ("alice", 88),
+]
+# Expected: {'alice': 90.0, 'bob': 81.5, 'charlie': 95.0}
+averages = {}
+# your code here
+print(averages)
 `,
-  "06_classes_and_objects": `# Classes — try it yourself
-class BankAccount:
-    def __init__(self, owner, balance=0):
-        self.owner = owner
-        self.balance = balance
 
-    def deposit(self, amount):
-        self.balance += amount
+  "06_classes_and_objects": `# Step 1 — your first class
+class Dog:
+    def __init__(self, name, breed):
+        self.name = name
+        self.breed = breed
 
-    def withdraw(self, amount):
-        if amount > self.balance:
-            raise ValueError(f"Need {amount}, have {self.balance}")
-        self.balance -= amount
+    def bark(self):
+        print(f"{self.name} says: Woof!")
+
+rex = Dog("Rex", "Labrador")
+buddy = Dog("Buddy", "Poodle")
+
+rex.bark()
+buddy.bark()
+print(rex.name, "/", buddy.breed)
+
+# Step 2 — prove what self is
+Dog.bark(rex)   # exact same as rex.bark()
+
+# -- YOUR TURN --
+# Build a Rectangle class with:
+#   area(), perimeter(), is_square(), __repr__
+
+class Rectangle:
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+
+    def area(self):
+        pass  # return width * height
+
+    def perimeter(self):
+        pass  # return 2 * (width + height)
+
+    def is_square(self):
+        pass  # return True if width == height
 
     def __repr__(self):
-        return f"BankAccount({self.owner}, ${self.balance:.2f})"
+        pass  # return "Rectangle(4 x 5)"
 
-account = BankAccount("Jack", 100)
-account.deposit(75)
-account.withdraw(30)
-print(account)
+r = Rectangle(4, 5)
+# print(r)               # Rectangle(4 x 5)
+# print(r.area())        # 20
+# print(r.perimeter())   # 18
+# print(r.is_square())   # False
 `,
-  "07_error_handling": `# Error Handling — try it yourself
-class InsufficientFundsError(Exception):
-    def __init__(self, balance, amount):
-        super().__init__(f"Cannot withdraw ${amount}: balance is ${balance}")
 
-def withdraw(balance, amount):
-    if amount > balance:
-        raise InsufficientFundsError(balance, amount)
-    return balance - amount
+  "07_error_handling": `# Step 1 — see what errors look like
+# Run each block one at a time by commenting the others out
 
+# int("abc")          # ValueError
+# [1, 2, 3][10]       # IndexError
+# {}["missing"]       # KeyError
+# None.upper()        # AttributeError
+# 1 / 0               # ZeroDivisionError
+
+# Step 2 — catch an error
+text = "abc"
 try:
-    result = withdraw(100, 250)
-except InsufficientFundsError as e:
-    print(f"Caught: {e}")
-`,
-  "08_modules": `# Modules — try it yourself
-import json
-from datetime import datetime, timedelta
-from collections import Counter
+    number = int(text)
+    print(f"Converted: {number}")
+except ValueError:
+    print(f"'{text}' is not a valid number")
 
-# JSON round-trip
+# Try changing text to "42" — the except block is skipped
+
+# -- YOUR TURN --
+# Write parse_age(s) that:
+# - converts s to int (raise ValueError "Not a number" if it fails)
+# - raises ValueError "Age can't be negative" if < 0
+# - raises ValueError "That's not a real age" if > 150
+# - returns the number if valid
+
+def parse_age(s):
+    pass  # your code here
+
+# print(parse_age("25"))    # 25
+# print(parse_age("abc"))   # ValueError: Not a number
+# print(parse_age("-5"))    # ValueError: Age can't be negative
+`,
+
+  "08_modules": `# Step 1 — json
+import json
+
 data = {"name": "Jack", "scores": [95, 87, 92], "active": True}
-json_str = json.dumps(data, indent=2)
-print(json_str)
-restored = json.loads(json_str)
+text = json.dumps(data, indent=2)
+print(text)
+
+restored = json.loads(text)
 print("Round-trip ok:", data == restored)
 
-# Date math
+# Step 2 — datetime
+from datetime import datetime, timedelta
+
 now = datetime.now()
-print(f"Today: {now.strftime('%A, %B %d %Y')}")
+print(now.strftime("%A, %B %d %Y"))
 print(f"In 30 days: {(now + timedelta(days=30)).date()}")
 
-# Counter
-text = "python programming is pretty powerful"
-top3 = Counter(text.replace(" ", "")).most_common(3)
-print(f"Top 3 chars: {top3}")
+# -- YOUR TURN --
+# Save your profile to a file and read it back:
+# 1. Create a dict: name, skills (list), year_started
+# 2. Write to "profile.json" using:
+#    with open("profile.json", "w") as f:
+#        json.dump(data, f, indent=2)
+# 3. Read it back:
+#    with open("profile.json") as f:
+#        loaded = json.load(f)
+# 4. Print the loaded data
 `,
 };
 
@@ -419,7 +544,7 @@ function selectLesson(index) {
 
   // Load starter code
   const starter = STARTERS[currentLesson.id] || "# Write your Python here\nprint('hello!')\n";
-  if (editor) editor.setValue(starter);
+  editor.setValue(starter);
 
   // Clear output
   clearOutput();
@@ -474,32 +599,26 @@ function clearOutput() {
 
 document.getElementById("run-btn").onclick = runCode;
 document.getElementById("clear-btn").onclick = () => {
-  if (editor) editor.setValue("");
+  editor.setValue("");
   clearOutput();
 };
 
-// Monaco setup
-require.config({ paths: { vs: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs" } });
-require(["vs/editor/editor.main"], function () {
-  editor = monaco.editor.create(document.getElementById("editor-container"), {
-    value: "",
-    language: "python",
-    theme: "vs-dark",
-    fontSize: 14,
-    fontFamily: '"JetBrains Mono", "Fira Code", monospace',
-    minimap: { enabled: false },
-    scrollBeyondLastLine: false,
-    lineNumbers: "on",
-    renderLineHighlight: "line",
-    padding: { top: 12, bottom: 12 },
-    automaticLayout: true,
-  });
-
-  // Cmd+Enter / Ctrl+Enter to run
-  editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, runCode);
-
-  loadLessons();
+// Tab key inserts spaces instead of moving focus
+document.getElementById("editor").addEventListener("keydown", (e) => {
+  if (e.key === "Tab") {
+    e.preventDefault();
+    const el = e.target;
+    const start = el.selectionStart;
+    el.value = el.value.slice(0, start) + "    " + el.value.slice(el.selectionEnd);
+    el.selectionStart = el.selectionEnd = start + 4;
+  }
+  if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+    e.preventDefault();
+    runCode();
+  }
 });
+
+loadLessons();
 </script>
 </body>
 </html>

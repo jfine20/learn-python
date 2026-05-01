@@ -1,76 +1,188 @@
-# Dicts & Sets — Why Lookups Are Instant
+# Module 5: Dicts & Sets
 
-## The hash table
+## What is a dict?
 
-A dict (and set) is backed by a **hash table**. Here's what happens when you do
-`d["key"]`:
+A dict (dictionary) maps **keys** to **values**. Like a real dictionary maps words to definitions. You look up a key and instantly get the value back.
 
-1. Python calls `hash("key")` — converts the key to an integer (the hash)
-2. Uses the hash to jump directly to a memory slot
-3. Returns the value at that slot
+---
 
-This is O(1) — constant time regardless of dict size. A list lookup by value
-is O(n) — it has to check every item.
+## Step 1: Creating and reading dicts
 
 ```python
-import timeit
-big_list = list(range(1_000_000))
-big_dict = {i: i for i in range(1_000_000)}
+user = {
+    "name": "Jack",
+    "age": 28,
+    "role": "founder"
+}
 
-# Looking up 999_999 in a list: scans up to a million items
-# Looking up 999_999 in a dict: one hash computation, done
+print(user["name"])
+print(user["age"])
+print(len(user))
 ```
 
-## Keys must be hashable
+**What you should see:** `Jack`, `28`, `3`
 
-Because keys need a stable hash, only **immutable** objects can be keys:
-`str`, `int`, `float`, `tuple` (if its contents are also immutable).
+---
 
-`list`, `dict`, `set` cannot be dict keys — they're mutable, so their
-content (and thus their hash) could change.
+## Step 2: Safe access with .get()
+
+If you try to access a key that doesn't exist, Python crashes:
+
+```python
+user = {"name": "Jack"}
+print(user["salary"])   # KeyError!
+```
+
+Use `.get()` instead — it returns `None` (or a default you choose) if the key is missing:
+
+```python
+user = {"name": "Jack"}
+print(user.get("name"))           # Jack
+print(user.get("salary"))         # None — no crash
+print(user.get("salary", 0))      # 0 — your chosen default
+```
+
+---
+
+## Step 3: Adding, updating, deleting
+
+```python
+user = {"name": "Jack", "age": 28}
+
+user["role"] = "founder"          # add new key
+user["age"] = 29                  # update existing key
+del user["age"]                   # delete a key
+
+print(user)
+```
+
+---
+
+## Step 4: Looping over dicts
+
+```python
+person = {"name": "Jack", "age": 28, "city": "NYC"}
+
+# Just keys
+for key in person:
+    print(key)
+
+# Just values
+for value in person.values():
+    print(value)
+
+# Keys AND values (most common)
+for key, value in person.items():
+    print(f"{key}: {value}")
+```
+
+---
+
+## Step 5: Why dict lookups are instant — hash tables
+
+When you do `user["name"]`, Python doesn't scan through all the keys. It:
+1. Calls `hash("name")` — converts the key to a number
+2. Jumps directly to that memory slot
+3. Returns the value
+
+This is **O(1)** — same speed with 10 items or 10 million items. This is why dicts are one of Python's most important data structures.
+
+Because of this, only **immutable** objects can be keys (their hash must never change):
 
 ```python
 d = {}
-d[(1, 2)] = "tuple key works"   # ok
-d[[1, 2]] = "list key"          # TypeError: unhashable type: 'list'
+d["string"] = "works"
+d[42] = "works"
+d[(1, 2)] = "works"    # tuple of immutables — works
+
+try:
+    d[[1, 2]] = "fails"
+except TypeError as e:
+    print(e)
 ```
 
-## Common dict patterns
+---
+
+## Step 6: Dict comprehensions
+
+Just like list comprehensions, but produces a dict:
 
 ```python
-# Safe get with default
-d.get("missing_key", "default")
-
-# Iterate key-value pairs
-for k, v in d.items(): ...
-
-# Dict comprehension
-squares = {x: x**2 for x in range(5)}
-
-# Merge dicts (Python 3.9+)
-merged = dict_a | dict_b
-
-# Update in place
-dict_a.update(dict_b)
+words = ["apple", "banana", "kiwi", "fig"]
+lengths = {word: len(word) for word in words}
+print(lengths)
 ```
 
-## Sets
+**What you should see:** `{'apple': 5, 'banana': 6, 'kiwi': 4, 'fig': 3}`
 
-A set is a dict with only keys (no values). Same hash table, same O(1) lookup.
-Use sets for:
-- Deduplication
-- Membership testing (`if x in my_set` — much faster than `if x in my_list`)
-- Set operations: union `|`, intersection `&`, difference `-`
+---
+
+## Step 7: Counting things with a dict
+
+A very common pattern:
 
 ```python
-a = {1, 2, 3}
-b = {2, 3, 4}
-print(a | b)   # {1, 2, 3, 4}
-print(a & b)   # {2, 3}
-print(a - b)   # {1}
+text = "the cat sat on the mat the cat"
+counts = {}
+
+for word in text.split():
+    counts[word] = counts.get(word, 0) + 1
+
+print(counts)
 ```
 
-## Dict ordering
+**What you should see:** Each word mapped to how many times it appears.
 
-Since Python 3.7, dicts maintain **insertion order**. This is guaranteed
-by the language spec — not just an implementation detail.
+**Shortcut with Counter:**
+
+```python
+from collections import Counter
+counts = Counter(text.split())
+print(counts)
+print(counts.most_common(3))
+```
+
+---
+
+## Step 8: Sets
+
+A set is like a dict but with only keys — no values. It's built on the same hash table, so lookups are also instant. Use sets for:
+
+- **Deduplication** — remove duplicates from a list
+- **Membership testing** — `if x in my_set` is much faster than `if x in my_list`
+- **Set math** — find overlap, union, difference between groups
+
+```python
+a = {"alice", "bob", "carol"}
+b = {"bob", "carol", "dave"}
+
+print(a & b)    # intersection — who's in both
+print(a | b)    # union — everyone
+print(a - b)    # difference — in a but not b
+```
+
+**Remove duplicates from a list:**
+
+```python
+with_dupes = [1, 2, 2, 3, 3, 3, 4]
+unique = list(set(with_dupes))
+print(unique)
+```
+
+---
+
+## Now try it yourself
+
+```python
+# You have a list of (student, grade) pairs.
+# Build a dict that maps each student to their AVERAGE grade.
+
+grades = [
+    ("alice", 90), ("bob", 85), ("alice", 92),
+    ("bob", 78), ("charlie", 95), ("alice", 88),
+]
+
+# Step 1: group grades by student into lists
+# Step 2: calculate the average for each student
+# Expected output: {'alice': 90.0, 'bob': 81.5, 'charlie': 95.0}
+```

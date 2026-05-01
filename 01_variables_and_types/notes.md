@@ -1,76 +1,146 @@
-# Variables & Types — What Things Actually Mean
+# Module 1: Variables & Types
 
-## A variable is NOT a box
+## What even is a variable?
 
-In many languages, a variable is like a box: you put a value in it.
+Most people are taught that a variable is like a **box** — you put a value inside it. That's wrong in Python, and it will confuse you later.
 
-In Python, a variable is a **name tag** attached to an object. The object exists
-independently in memory. The name just points to it.
+In Python, a variable is a **name tag**. The object (the actual value) lives somewhere in memory. The variable is just a label you stick on it.
+
+---
+
+## Step 1: Create your first variable
+
+Type this in the editor and press **Run**:
 
 ```python
 x = 5
-y = x
-x = 10
-
-print(y)  # still 5 — y points to the original 5 object, not to x
+print(x)
 ```
 
-This matters enormously when the object is mutable (changeable):
+**What you should see:** `5`
 
-```python
-a = [1, 2, 3]
-b = a          # b is another name tag for the SAME list
-a.append(4)
+The `=` sign doesn't mean "equals" like in math. It means **"attach the name `x` to the object `5`"**.
 
-print(b)       # [1, 2, 3, 4] — b "saw" the change because it's the same object
-```
+---
 
-Use `id()` to see the object's memory address:
+## Step 2: See why name tags matter
+
+Now try this:
 
 ```python
 a = [1, 2, 3]
 b = a
-print(id(a) == id(b))  # True — same object
+a.append(99)
+print(a)
+print(b)
 ```
 
-## Types live on objects, not variables
+**What you should see:** Both `a` and `b` print `[1, 2, 3, 99]`.
 
-Python is *dynamically typed*: the name tag has no type. The object it points to does.
+**Why?** Because `b = a` doesn't copy the list. It creates a second name tag pointing to the **same list**. So when you change the list through `a`, `b` also sees the change — they're looking at the same object.
+
+---
+
+## Step 3: Prove it with id()
+
+`id()` shows you the memory address of an object — its unique identity.
 
 ```python
-x = 5        # x → int object
-x = "hello"  # x → str object (the int is untouched in memory until garbage collected)
+a = [1, 2, 3]
+b = a
+print(id(a))
+print(id(b))
+print(id(a) == id(b))
 ```
 
-Check type with `type()` or `isinstance()`:
+**What you should see:** Both ids are identical. `True` at the end.
+
+Now try making a real copy:
 
 ```python
-type(5)         # <class 'int'>
-isinstance(5, int)  # True
+a = [1, 2, 3]
+b = a.copy()
+a.append(99)
+print(a)
+print(b)
+print(id(a) == id(b))
 ```
 
-## Mutable vs immutable
+**What you should see:** `a` has 99, `b` doesn't. `False` — different objects.
 
-**Immutable** — the object can never change after creation:
-`int`, `float`, `str`, `tuple`, `bool`
+---
 
-**Mutable** — the object can be changed in-place:
-`list`, `dict`, `set`
+## Step 4: Mutable vs Immutable
 
-This is why strings feel like they "change" but don't:
+Some objects **can** be changed after creation. Some **cannot**.
+
+- **Immutable** (can't change): `int`, `float`, `str`, `tuple`, `bool`
+- **Mutable** (can change): `list`, `dict`, `set`
+
+Try this to see strings are immutable:
 
 ```python
 s = "hello"
-s = s + " world"  # a brand new string object is created; "hello" is untouched
+try:
+    s[0] = "H"
+except TypeError as e:
+    print("Error:", e)
 ```
 
-## None
+**What you should see:** An error saying you can't assign to a string.
 
-`None` is Python's way of saying "no value." It's an object too — there's only one
-`None` in existence. Always check with `is`, not `==`:
+Now try this — it *looks* like you changed the string, but you didn't:
 
 ```python
-x = None
-if x is None:
+s = "hello"
+print(id(s))
+s = s + " world"
+print(id(s))
+```
+
+**What you should see:** Two different ids. `s` now points to a **brand new string object**. The original `"hello"` was never touched.
+
+---
+
+## Step 5: Types
+
+Every object has a type. The variable itself has no type — only the object it points to does.
+
+```python
+thing = 42
+print(type(thing))
+
+thing = "now a string"
+print(type(thing))
+
+thing = [1, 2, 3]
+print(type(thing))
+```
+
+**What you should see:** The type changes each time, but `thing` is just a name tag pointing to whatever object you give it.
+
+---
+
+## Step 6: None
+
+`None` means "no value". It's Python's way of saying "nothing here."
+
+```python
+result = None
+print(result)
+print(type(result))
+
+if result is None:
     print("nothing here")
 ```
+
+Always use `is None` to check for None — not `== None`. There's only one `None` object in all of Python, so `is` (identity check) is the right tool.
+
+---
+
+## Now experiment
+
+Try changing the code. Some ideas:
+- What happens if you do `x = 5` then `y = x` then `x = 10` — what is `y`?
+- What happens if you put a list inside a list and copy it?
+- Can you put different types in the same list?
