@@ -7,25 +7,15 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
+from lessons import LESSONS
+
 BASE = Path(__file__).parent
 app = FastAPI()
 
 
 @app.get("/api/lessons")
 def get_lessons():
-    lessons = []
-    for notes_file in sorted(BASE.glob("*/notes.md")):
-        folder = notes_file.parent.name
-        parts = folder.split("_", 1)
-        num = parts[0]
-        title = parts[1].replace("_", " ").title() if len(parts) > 1 else folder
-        lessons.append({
-            "id": folder,
-            "num": num,
-            "title": title,
-            "content": notes_file.read_text(),
-        })
-    return lessons
+    return LESSONS
 
 
 class RunRequest(BaseModel):
@@ -50,7 +40,7 @@ def run_code(req: RunRequest):
 
 
 def _clean(s: str) -> str:
-    s = re.sub(r"\x1b\[[0-9;]*m", "", s)  # strip ANSI color codes
+    s = re.sub(r"\x1b\[[0-9;]*m", "", s)
     return s[:10000]
 
 

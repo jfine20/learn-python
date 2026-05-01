@@ -6,234 +6,204 @@
 <title>Learn Python</title>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: #0d1117;
-    color: #e6edf3;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #0d1117;
+  color: #e6edf3;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
 
-  /* ── NAV ── */
-  nav {
-    background: #161b22;
-    border-bottom: 1px solid #30363d;
-    padding: 0 16px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    overflow-x: auto;
-    flex-shrink: 0;
-    height: 48px;
-  }
-  nav .logo {
-    font-weight: 700;
-    color: #58a6ff;
-    margin-right: 16px;
-    font-size: 15px;
-    white-space: nowrap;
-  }
-  nav button {
-    background: none;
-    border: none;
-    color: #8b949e;
-    padding: 6px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 13px;
-    white-space: nowrap;
-    transition: background 0.15s, color 0.15s;
-  }
-  nav button:hover { background: #21262d; color: #e6edf3; }
-  nav button.active { background: #1f6feb; color: #fff; }
+/* ── TOP NAV ── */
+nav {
+  background: #161b22;
+  border-bottom: 1px solid #30363d;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow-x: auto;
+  flex-shrink: 0;
+  height: 48px;
+  scrollbar-width: none;
+}
+nav::-webkit-scrollbar { display: none; }
+.logo { font-weight: 700; color: #58a6ff; margin-right: 12px; font-size: 15px; white-space: nowrap; }
+nav button {
+  background: none; border: none; color: #8b949e;
+  padding: 6px 12px; border-radius: 6px; cursor: pointer;
+  font-size: 13px; white-space: nowrap; transition: all 0.15s;
+}
+nav button:hover { background: #21262d; color: #e6edf3; }
+nav button.active { background: #1f6feb; color: #fff; }
 
-  /* ── MAIN ── */
-  main {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-  }
+/* ── MAIN LAYOUT ── */
+main { display: flex; flex: 1; overflow: hidden; }
 
-  /* ── LESSON PANEL ── */
-  #lesson-panel {
-    width: 40%;
-    min-width: 280px;
-    border-right: 1px solid #30363d;
-    overflow-y: auto;
-    padding: 28px 32px;
-    flex-shrink: 0;
-  }
-  #lesson-panel h1 { font-size: 20px; margin-bottom: 20px; color: #58a6ff; }
-  #lesson-content h1 { font-size: 18px; color: #e6edf3; margin: 24px 0 10px; }
-  #lesson-content h2 { font-size: 15px; color: #58a6ff; margin: 20px 0 8px; border-bottom: 1px solid #21262d; padding-bottom: 4px; }
-  #lesson-content p  { font-size: 14px; line-height: 1.7; color: #c9d1d9; margin-bottom: 12px; }
-  #lesson-content ul, #lesson-content ol { padding-left: 20px; margin-bottom: 12px; }
-  #lesson-content li { font-size: 14px; line-height: 1.7; color: #c9d1d9; margin-bottom: 4px; }
-  #lesson-content code {
-    background: #161b22;
-    border: 1px solid #30363d;
-    border-radius: 4px;
-    padding: 1px 5px;
-    font-family: "JetBrains Mono", "Fira Code", monospace;
-    font-size: 12px;
-    color: #79c0ff;
-  }
-  #lesson-content pre {
-    background: #161b22;
-    border: 1px solid #30363d;
-    border-radius: 8px;
-    padding: 14px 16px;
-    overflow-x: auto;
-    margin-bottom: 14px;
-  }
-  #lesson-content pre code {
-    background: none;
-    border: none;
-    padding: 0;
-    font-size: 13px;
-    color: #e6edf3;
-  }
-  #lesson-content strong { color: #e6edf3; }
+/* ── LEFT LESSON PANEL ── */
+#lesson-panel {
+  width: 42%;
+  min-width: 300px;
+  border-right: 1px solid #30363d;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-shrink: 0;
+}
 
-  /* ── RIGHT PANEL ── */
-  #right-panel {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    overflow: hidden;
-  }
+#step-header {
+  background: #161b22;
+  border-bottom: 1px solid #30363d;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+#step-title { font-size: 14px; font-weight: 600; color: #e6edf3; }
+#step-counter { font-size: 12px; color: #8b949e; }
 
-  #editor-toolbar {
-    background: #161b22;
-    border-bottom: 1px solid #30363d;
-    padding: 8px 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-shrink: 0;
-  }
-  #editor-toolbar span {
-    font-size: 12px;
-    color: #8b949e;
-    flex: 1;
-  }
+#lesson-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 28px;
+}
 
-  #run-btn {
-    background: #238636;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    padding: 6px 16px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.15s;
-  }
-  #run-btn:hover { background: #2ea043; }
-  #run-btn:active { background: #1a7f2e; }
-  #run-btn:disabled { background: #21262d; color: #484f58; cursor: default; }
+/* Markdown styles */
+#lesson-body h2 { font-size: 18px; color: #58a6ff; margin: 0 0 16px; }
+#lesson-body h3 { font-size: 15px; color: #e6edf3; margin: 20px 0 8px; }
+#lesson-body p { font-size: 14px; line-height: 1.75; color: #c9d1d9; margin-bottom: 14px; }
+#lesson-body ul, #lesson-body ol { padding-left: 20px; margin-bottom: 14px; }
+#lesson-body li { font-size: 14px; line-height: 1.75; color: #c9d1d9; margin-bottom: 4px; }
+#lesson-body code {
+  background: #161b22; border: 1px solid #30363d; border-radius: 4px;
+  padding: 1px 6px; font-family: "Menlo", monospace; font-size: 12px; color: #79c0ff;
+}
+#lesson-body pre {
+  background: #161b22; border: 1px solid #30363d; border-radius: 8px;
+  padding: 14px 16px; overflow-x: auto; margin-bottom: 16px;
+}
+#lesson-body pre code {
+  background: none; border: none; padding: 0; font-size: 13px; color: #e6edf3;
+}
+#lesson-body strong { color: #e6edf3; }
+#lesson-body table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 13px; }
+#lesson-body th { background: #161b22; color: #58a6ff; padding: 8px 12px; text-align: left; border: 1px solid #30363d; }
+#lesson-body td { padding: 8px 12px; border: 1px solid #30363d; color: #c9d1d9; }
 
-  #clear-btn {
-    background: none;
-    border: 1px solid #30363d;
-    color: #8b949e;
-    border-radius: 6px;
-    padding: 6px 12px;
-    font-size: 13px;
-    cursor: pointer;
-    transition: background 0.15s;
-  }
-  #clear-btn:hover { background: #21262d; color: #e6edf3; }
+/* Hint box */
+#hint-box {
+  margin: 16px 0;
+  background: #1c2128;
+  border: 1px solid #30363d;
+  border-left: 3px solid #d29922;
+  border-radius: 6px;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #c9d1d9;
+  line-height: 1.6;
+  display: none;
+}
+#hint-box.visible { display: block; }
 
-  #editor {
-    flex: 1;
-    min-height: 0;
-    width: 100%;
-    background: #1e1e1e;
-    color: #d4d4d4;
-    border: none;
-    outline: none;
-    resize: none;
-    font-family: "JetBrains Mono", "Fira Code", "Menlo", monospace;
-    font-size: 14px;
-    line-height: 1.6;
-    padding: 14px 16px;
-    tab-size: 4;
-  }
+/* Step navigation */
+#step-nav {
+  border-top: 1px solid #30363d;
+  padding: 12px 20px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+  background: #161b22;
+}
+.step-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #30363d; cursor: pointer; transition: background 0.15s;
+}
+.step-dot.done { background: #3fb950; }
+.step-dot.active { background: #58a6ff; }
+.nav-spacer { flex: 1; }
+.nav-btn {
+  background: #21262d; border: 1px solid #30363d; color: #e6edf3;
+  border-radius: 6px; padding: 6px 14px; font-size: 13px;
+  cursor: pointer; transition: all 0.15s;
+}
+.nav-btn:hover { background: #30363d; }
+.nav-btn:disabled { opacity: 0.4; cursor: default; }
+.nav-btn.primary { background: #1f6feb; border-color: #1f6feb; }
+.nav-btn.primary:hover { background: #388bfd; }
 
-  /* ── OUTPUT ── */
-  #output-panel {
-    border-top: 1px solid #30363d;
-    background: #0d1117;
-    flex-shrink: 0;
-    height: 200px;
-    display: flex;
-    flex-direction: column;
-  }
-  #output-header {
-    background: #161b22;
-    border-bottom: 1px solid #30363d;
-    padding: 6px 16px;
-    font-size: 11px;
-    font-weight: 600;
-    color: #8b949e;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  #output-status {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #30363d;
-    transition: background 0.2s;
-  }
-  #output-status.ok    { background: #3fb950; }
-  #output-status.error { background: #f85149; }
-  #output-status.running { background: #d29922; }
+/* ── RIGHT PANEL ── */
+#right-panel { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
 
-  #output-content {
-    flex: 1;
-    overflow-y: auto;
-    padding: 12px 16px;
-    font-family: "JetBrains Mono", "Fira Code", monospace;
-    font-size: 13px;
-    line-height: 1.6;
-    white-space: pre-wrap;
-    word-break: break-all;
-  }
-  #output-content.has-error { color: #f85149; }
+#editor-toolbar {
+  background: #161b22; border-bottom: 1px solid #30363d;
+  padding: 8px 16px; display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+}
+#editor-toolbar .spacer { flex: 1; }
+#hint-btn {
+  background: none; border: 1px solid #d29922; color: #d29922;
+  border-radius: 6px; padding: 5px 12px; font-size: 12px;
+  cursor: pointer; transition: all 0.15s;
+}
+#hint-btn:hover { background: #d2992220; }
+#run-btn {
+  background: #238636; color: #fff; border: none;
+  border-radius: 6px; padding: 6px 18px; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: background 0.15s;
+}
+#run-btn:hover { background: #2ea043; }
+#run-btn:disabled { background: #21262d; color: #484f58; cursor: default; }
 
-  #empty-state {
-    color: #484f58;
-    font-style: italic;
-    font-family: -apple-system, sans-serif;
-    font-size: 13px;
-  }
+#editor {
+  flex: 1; min-height: 0; width: 100%;
+  background: #1e1e1e; color: #d4d4d4;
+  border: none; outline: none; resize: none;
+  font-family: "Menlo", "Fira Code", monospace;
+  font-size: 14px; line-height: 1.6; padding: 14px 16px; tab-size: 4;
+}
 
-  /* ── LOADING ── */
-  #loading {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: #0d1117;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    color: #8b949e;
-  }
-  #loading.visible { display: flex; }
+/* ── OUTPUT ── */
+#output-panel {
+  border-top: 1px solid #30363d; background: #0d1117;
+  flex-shrink: 0; height: 200px; display: flex; flex-direction: column;
+}
+#output-header {
+  background: #161b22; border-bottom: 1px solid #30363d;
+  padding: 6px 16px; font-size: 11px; font-weight: 600;
+  color: #8b949e; letter-spacing: 0.05em; text-transform: uppercase;
+  display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+}
+#output-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #30363d; transition: background 0.2s;
+}
+#output-dot.ok { background: #3fb950; }
+#output-dot.error { background: #f85149; }
+#output-dot.running { background: #d29922; animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+#check-result {
+  margin-left: auto; font-size: 12px; font-weight: 600;
+  padding: 2px 10px; border-radius: 10px; display: none;
+}
+#check-result.correct { display: block; background: #238636; color: #fff; }
+#check-result.wrong { display: block; background: #da3633; color: #fff; }
+
+#output-content {
+  flex: 1; overflow-y: auto; padding: 12px 16px;
+  font-family: "Menlo", monospace; font-size: 13px; line-height: 1.6;
+  white-space: pre-wrap; word-break: break-all; color: #e6edf3;
+}
+#output-content.error { color: #f85149; }
+.placeholder { color: #484f58; font-style: italic; font-family: inherit; font-size: 13px; }
 </style>
 </head>
 <body>
-
-<div id="loading" class="visible">Loading...</div>
 
 <nav>
   <div class="logo">🐍 Learn Python</div>
@@ -241,354 +211,151 @@
 </nav>
 
 <main>
+  <!-- LEFT: lesson content -->
   <div id="lesson-panel">
-    <div id="lesson-content"></div>
+    <div id="step-header">
+      <div id="step-title">Loading...</div>
+      <div id="step-counter"></div>
+    </div>
+    <div id="lesson-body"></div>
+    <div id="step-nav">
+      <div id="dots"></div>
+      <div class="nav-spacer"></div>
+      <button class="nav-btn" id="prev-btn" onclick="changeStep(-1)">← Back</button>
+      <button class="nav-btn primary" id="next-btn" onclick="changeStep(1)">Next →</button>
+    </div>
   </div>
 
+  <!-- RIGHT: editor + output -->
   <div id="right-panel">
     <div id="editor-toolbar">
-      <span>Cmd+Enter to run</span>
-      <button id="clear-btn">Clear</button>
-      <button id="run-btn">▶ Run</button>
+      <span style="font-size:12px;color:#8b949e;">Cmd+Enter to run</span>
+      <div class="spacer"></div>
+      <button id="hint-btn" onclick="toggleHint()">💡 Hint</button>
+      <button id="run-btn" onclick="runCode()">▶ Run</button>
     </div>
     <textarea id="editor" spellcheck="false" autocorrect="off" autocapitalize="off"></textarea>
     <div id="output-panel">
       <div id="output-header">
-        <div id="output-status"></div>
+        <div id="output-dot"></div>
         Output
+        <div id="check-result"></div>
       </div>
-      <div id="output-content">
-        <span id="empty-state">Run your code to see output here.</span>
-      </div>
+      <div id="output-content"><span class="placeholder">Hit ▶ Run to see output here.</span></div>
     </div>
   </div>
 </main>
 
 <script>
 let lessons = [];
-let currentLesson = null;
-const editor = {
-  getValue: () => document.getElementById("editor").value,
-  setValue: (v) => { document.getElementById("editor").value = v; }
-};
+let moduleIndex = 0;
+let stepIndex = 0;
+let completedSteps = {};  // "moduleIdx-stepIdx" → true
+let hintVisible = false;
 
-const STARTERS = {
-  "00_the_basics": `# Welcome! This is your first program.
-# Lines starting with # are comments — Python ignores them.
-# They're notes for you.
+// ── Data helpers ──────────────────────────────────────
+const currentModule = () => lessons[moduleIndex];
+const currentStep   = () => currentModule()?.steps[stepIndex];
+const stepKey       = (m, s) => `${m}-${s}`;
 
-# Step 1: print() displays things on the screen
-print("Hello, world!")
-print("My name is Jack")
-
-# Step 2: Math
-print(10 + 3)
-print(10 * 3)
-print(10 / 3)
-print(10 % 3)   # remainder after dividing — what do you expect?
-
-# Step 3: Variables store values
-name = "Jack"
-age = 28
-print(name)
-print(age)
-print(f"Hi, I am {name} and I am {age} years old.")
-
-# -- YOUR TURN --
-# Change name and age to your own values and re-run.
-# Then add a variable for your city and print a sentence using it.
-`,
-
-  "01_variables_and_types": `# Step 1 from the lesson — run this and read the output
-x = 5
-print("x =", x)
-
-# Now try the name tag concept:
-a = [1, 2, 3]
-b = a           # b is a second name tag for the SAME list
-a.append(99)
-
-print("a =", a)
-print("b =", b)         # what do you expect?
-print("same object?", id(a) == id(b))
-
-# -- YOUR TURN --
-# Try: make a real copy so changes to a don't affect b
-# Hint: use a.copy()
-`,
-
-  "02_control_flow": `# Step 1 — basic if/elif/else
-score = 85
-
-if score >= 90:
-    print("A")
-elif score >= 80:
-    print("B")
-elif score >= 70:
-    print("C")
-else:
-    print("F")
-
-# Try changing score to 95, 72, 50 and re-running
-
-# -- YOUR TURN --
-# FizzBuzz: print numbers 1-20
-# Replace multiples of 3 with "Fizz"
-# Replace multiples of 5 with "Buzz"
-# Replace multiples of both with "FizzBuzz"
-# Hint: use % (modulo) — 9 % 3 == 0 means divisible by 3
-
-for n in range(1, 21):
-    pass  # replace this with your logic
-`,
-
-  "03_functions": `# Step 1 — define and call a function
-def greet(name):
-    return f"Hello, {name}!"
-
-print(greet("Jack"))
-print(greet("Alice"))
-
-# Step 2 — functions are objects, pass them around
-def double(x):
-    return x * 2
-
-def apply(func, value):
-    return func(value)
-
-print(apply(double, 7))    # passes double as an argument
-
-# -- YOUR TURN --
-# Write make_adder(n) — returns a function that adds n to its argument
-# When done, uncomment the test lines below
-
-def make_adder(n):
-    pass  # write your function here
-
-# add5 = make_adder(5)
-# print(add5(10))   # should print 15
-# print(add5(3))    # should print 8
-`,
-
-  "04_lists_and_loops": `# Step 1 — list basics
-fruits = ["apple", "banana", "cherry"]
-print(fruits[0])     # first item
-print(fruits[-1])    # last item
-print(fruits[1:])    # from index 1 onward
-print(len(fruits))   # number of items
-
-# Step 2 — list comprehension
-squares = [x ** 2 for x in range(1, 6)]
-print(squares)
-
-# Step 3 — the shallow copy trap
-import copy
-original = [[1, 2], [3, 4]]
-shallow = original.copy()
-deep = copy.deepcopy(original)
-
-shallow[0].append(99)
-deep[0].append(88)
-
-print("original:", original)   # what do you expect?
-print("shallow: ", shallow)
-print("deep:    ", deep)
-
-# -- YOUR TURN --
-# Get only even numbers from 1-20 using a list comprehension
-evens = []  # replace with a comprehension
-print(evens)
-`,
-
-  "05_dicts_and_sets": `# Step 1 — create and read a dict
-user = {"name": "Jack", "age": 28, "role": "founder"}
-print(user["name"])
-print(user.get("salary", 0))   # safe — returns 0 if missing
-
-# Step 2 — loop over a dict
-for key, value in user.items():
-    print(f"{key}: {value}")
-
-# Step 3 — count word frequencies
-text = "the cat sat on the mat the cat sat"
-counts = {}
-for word in text.split():
-    counts[word] = counts.get(word, 0) + 1
-print(counts)
-
-# -- YOUR TURN --
-# Given this list of grades, find each student's average
-grades = [
-    ("alice", 90), ("bob", 85), ("alice", 92),
-    ("bob", 78), ("charlie", 95), ("alice", 88),
-]
-# Expected: {'alice': 90.0, 'bob': 81.5, 'charlie': 95.0}
-averages = {}
-# your code here
-print(averages)
-`,
-
-  "06_classes_and_objects": `# Step 1 — your first class
-class Dog:
-    def __init__(self, name, breed):
-        self.name = name
-        self.breed = breed
-
-    def bark(self):
-        print(f"{self.name} says: Woof!")
-
-rex = Dog("Rex", "Labrador")
-buddy = Dog("Buddy", "Poodle")
-
-rex.bark()
-buddy.bark()
-print(rex.name, "/", buddy.breed)
-
-# Step 2 — prove what self is
-Dog.bark(rex)   # exact same as rex.bark()
-
-# -- YOUR TURN --
-# Build a Rectangle class with:
-#   area(), perimeter(), is_square(), __repr__
-
-class Rectangle:
-    def __init__(self, width, height):
-        self.width = width
-        self.height = height
-
-    def area(self):
-        pass  # return width * height
-
-    def perimeter(self):
-        pass  # return 2 * (width + height)
-
-    def is_square(self):
-        pass  # return True if width == height
-
-    def __repr__(self):
-        pass  # return "Rectangle(4 x 5)"
-
-r = Rectangle(4, 5)
-# print(r)               # Rectangle(4 x 5)
-# print(r.area())        # 20
-# print(r.perimeter())   # 18
-# print(r.is_square())   # False
-`,
-
-  "07_error_handling": `# Step 1 — see what errors look like
-# Run each block one at a time by commenting the others out
-
-# int("abc")          # ValueError
-# [1, 2, 3][10]       # IndexError
-# {}["missing"]       # KeyError
-# None.upper()        # AttributeError
-# 1 / 0               # ZeroDivisionError
-
-# Step 2 — catch an error
-text = "abc"
-try:
-    number = int(text)
-    print(f"Converted: {number}")
-except ValueError:
-    print(f"'{text}' is not a valid number")
-
-# Try changing text to "42" — the except block is skipped
-
-# -- YOUR TURN --
-# Write parse_age(s) that:
-# - converts s to int (raise ValueError "Not a number" if it fails)
-# - raises ValueError "Age can't be negative" if < 0
-# - raises ValueError "That's not a real age" if > 150
-# - returns the number if valid
-
-def parse_age(s):
-    pass  # your code here
-
-# print(parse_age("25"))    # 25
-# print(parse_age("abc"))   # ValueError: Not a number
-# print(parse_age("-5"))    # ValueError: Age can't be negative
-`,
-
-  "08_modules": `# Step 1 — json
-import json
-
-data = {"name": "Jack", "scores": [95, 87, 92], "active": True}
-text = json.dumps(data, indent=2)
-print(text)
-
-restored = json.loads(text)
-print("Round-trip ok:", data == restored)
-
-# Step 2 — datetime
-from datetime import datetime, timedelta
-
-now = datetime.now()
-print(now.strftime("%A, %B %d %Y"))
-print(f"In 30 days: {(now + timedelta(days=30)).date()}")
-
-# -- YOUR TURN --
-# Save your profile to a file and read it back:
-# 1. Create a dict: name, skills (list), year_started
-# 2. Write to "profile.json" using:
-#    with open("profile.json", "w") as f:
-#        json.dump(data, f, indent=2)
-# 3. Read it back:
-#    with open("profile.json") as f:
-#        loaded = json.load(f)
-# 4. Print the loaded data
-`,
-};
-
-async function loadLessons() {
+// ── Load ──────────────────────────────────────────────
+async function init() {
   const res = await fetch("/api/lessons");
   lessons = await res.json();
 
   const nav = document.getElementById("nav-tabs");
-  lessons.forEach((lesson, i) => {
+  lessons.forEach((mod, i) => {
     const btn = document.createElement("button");
-    btn.textContent = `${lesson.num} ${lesson.title}`;
-    btn.onclick = () => selectLesson(i);
-    btn.dataset.index = i;
+    btn.textContent = `${mod.id.split("_")[0]} ${mod.title}`;
+    btn.dataset.idx = i;
+    btn.onclick = () => selectModule(i);
     nav.appendChild(btn);
   });
 
-  if (lessons.length > 0) selectLesson(0);
-  document.getElementById("loading").classList.remove("visible");
+  selectModule(0);
 }
 
-function selectLesson(index) {
-  currentLesson = lessons[index];
+function selectModule(idx) {
+  moduleIndex = idx;
+  stepIndex = 0;
+  hintVisible = false;
+  document.querySelectorAll("nav button[data-idx]").forEach((b, i) => {
+    b.classList.toggle("active", i === idx);
+  });
+  renderStep();
+}
 
-  // Update nav
-  document.querySelectorAll("nav button[data-index]").forEach((b, i) => {
-    b.classList.toggle("active", i === index);
+// ── Render current step ──────────────────────────────
+function renderStep() {
+  const mod  = currentModule();
+  const step = currentStep();
+  if (!step) return;
+
+  // Header
+  document.getElementById("step-title").textContent = step.title;
+  document.getElementById("step-counter").textContent =
+    `Step ${stepIndex + 1} of ${mod.steps.length}`;
+
+  // Lesson body — markdown + hint box
+  const hintHtml = step.hint
+    ? `<div id="hint-box" class="${hintVisible ? "visible" : ""}">💡 <strong>Hint:</strong> ${step.hint}</div>`
+    : "";
+  document.getElementById("lesson-body").innerHTML =
+    marked.parse(step.teach) + hintHtml;
+
+  // Dots
+  const dots = document.getElementById("dots");
+  dots.innerHTML = "";
+  mod.steps.forEach((_, i) => {
+    const d = document.createElement("div");
+    d.className = "step-dot" +
+      (completedSteps[stepKey(moduleIndex, i)] ? " done" : "") +
+      (i === stepIndex ? " active" : "");
+    d.onclick = () => { stepIndex = i; renderStep(); };
+    dots.appendChild(d);
   });
 
-  // Render lesson markdown
-  document.getElementById("lesson-content").innerHTML =
-    marked.parse(currentLesson.content);
+  // Nav buttons
+  document.getElementById("prev-btn").disabled = stepIndex === 0;
+  document.getElementById("next-btn").textContent =
+    stepIndex === mod.steps.length - 1 ? "Finish ✓" : "Next →";
 
-  // Load starter code
-  const starter = STARTERS[currentLesson.id] || "# Write your Python here\nprint('hello!')\n";
-  editor.setValue(starter);
+  // Editor
+  document.getElementById("editor").value = step.code || "";
 
   // Clear output
-  clearOutput();
+  setOutput("", false);
+  document.getElementById("check-result").className = "";
+  document.getElementById("check-result").textContent = "";
+  hintVisible = false;
 }
 
+// ── Navigation ───────────────────────────────────────
+function changeStep(dir) {
+  const mod = currentModule();
+  const next = stepIndex + dir;
+  if (next < 0 || next >= mod.steps.length) return;
+  stepIndex = next;
+  renderStep();
+}
+
+// ── Hint ─────────────────────────────────────────────
+function toggleHint() {
+  hintVisible = !hintVisible;
+  const box = document.getElementById("hint-box");
+  if (box) box.classList.toggle("visible", hintVisible);
+}
+
+// ── Run code ─────────────────────────────────────────
 async function runCode() {
-  const code = editor.getValue();
+  const code = document.getElementById("editor").value;
   if (!code.trim()) return;
 
   const btn = document.getElementById("run-btn");
-  const status = document.getElementById("output-status");
-  const output = document.getElementById("output-content");
-
   btn.disabled = true;
   btn.textContent = "Running...";
-  status.className = "running";
-  output.className = "";
-  output.textContent = "";
+  document.getElementById("output-dot").className = "running";
+  document.getElementById("check-result").className = "";
 
   try {
     const res = await fetch("/api/run", {
@@ -599,44 +366,65 @@ async function runCode() {
     const data = await res.json();
 
     if (data.stderr) {
-      output.className = "has-error";
-      output.textContent = data.stderr;
-      status.className = "error";
+      setOutput(data.stderr, true);
     } else {
-      output.textContent = data.stdout || "(no output)";
-      status.className = "ok";
+      setOutput(data.stdout || "(no output)", false);
+      checkOutput(data.stdout);
     }
-  } catch (e) {
-    output.className = "has-error";
-    output.textContent = "Failed to connect to server.";
-    status.className = "error";
+  } catch {
+    setOutput("Could not connect to server.", true);
   } finally {
     btn.disabled = false;
     btn.textContent = "▶ Run";
   }
 }
 
-function clearOutput() {
-  const output = document.getElementById("output-content");
-  output.className = "";
-  output.innerHTML = '<span id="empty-state">Run your code to see output here.</span>';
-  document.getElementById("output-status").className = "";
+function setOutput(text, isError) {
+  const el = document.getElementById("output-content");
+  el.className = isError ? "error" : "";
+  el.textContent = text || "";
+  if (!text) {
+    el.innerHTML = '<span class="placeholder">Hit ▶ Run to see output here.</span>';
+  }
+  document.getElementById("output-dot").className = isError ? "error" : (text ? "ok" : "");
 }
 
-document.getElementById("run-btn").onclick = runCode;
-document.getElementById("clear-btn").onclick = () => {
-  editor.setValue("");
-  clearOutput();
-};
+function checkOutput(actual) {
+  const step = currentStep();
+  if (!step?.expected) return;  // no expected — free exploration
 
-// Tab key inserts spaces instead of moving focus
-document.getElementById("editor").addEventListener("keydown", (e) => {
+  const normalize = s => s?.trim().replace(/\r\n/g, "\n");
+  const ok = normalize(actual) === normalize(step.expected);
+  const el = document.getElementById("check-result");
+
+  if (ok) {
+    el.className = "correct";
+    el.textContent = "✓ Correct!";
+    completedSteps[stepKey(moduleIndex, stepIndex)] = true;
+    renderDots();
+  } else {
+    el.className = "wrong";
+    el.textContent = "Not quite yet";
+  }
+}
+
+function renderDots() {
+  const mod = currentModule();
+  document.querySelectorAll(".step-dot").forEach((d, i) => {
+    d.className = "step-dot" +
+      (completedSteps[stepKey(moduleIndex, i)] ? " done" : "") +
+      (i === stepIndex ? " active" : "");
+  });
+}
+
+// ── Tab key ──────────────────────────────────────────
+document.getElementById("editor").addEventListener("keydown", e => {
   if (e.key === "Tab") {
     e.preventDefault();
     const el = e.target;
-    const start = el.selectionStart;
-    el.value = el.value.slice(0, start) + "    " + el.value.slice(el.selectionEnd);
-    el.selectionStart = el.selectionEnd = start + 4;
+    const s = el.selectionStart;
+    el.value = el.value.slice(0, s) + "    " + el.value.slice(el.selectionEnd);
+    el.selectionStart = el.selectionEnd = s + 4;
   }
   if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
     e.preventDefault();
@@ -644,7 +432,7 @@ document.getElementById("editor").addEventListener("keydown", (e) => {
   }
 });
 
-loadLessons();
+init();
 </script>
 </body>
 </html>
