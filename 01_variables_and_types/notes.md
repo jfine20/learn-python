@@ -1,8 +1,10 @@
-# Module 1: Variables & Types
+# Module 1: Variables & Types (deeper)
 
-## What even is a variable?
+## You already know what a variable is — now let's go deeper
 
-Most people are taught that a variable is like a **box** — you put a value inside it. That's wrong in Python, and it will confuse you later.
+In Module 0 you learned that variables store values. Now we're going to look at **how Python actually stores things in memory**, because understanding this will save you from confusing bugs later.
+
+Most people are taught that a variable is like a **box** — you put a value inside it. That works as a beginner mental model, but it's wrong in Python, and it will confuse you later.
 
 In Python, a variable is a **name tag**. The object (the actual value) lives somewhere in memory. The variable is just a label you stick on it.
 

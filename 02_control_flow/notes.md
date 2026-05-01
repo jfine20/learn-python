@@ -2,7 +2,9 @@
 
 ## What is control flow?
 
-Control flow is how your program makes decisions — which code runs, which gets skipped, how many times something repeats.
+So far your programs have run top to bottom, every line, every time. **Control flow** is how you change that — making decisions, skipping code, and repeating things.
+
+This is where programs start to feel alive.
 
 ---
 
