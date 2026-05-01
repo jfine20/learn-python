@@ -1,44 +1,122 @@
-# Module 01 — Variables & Types
-# Run this file: python 01_variables_and_types/exercise.py
+print("=" * 50)
+print("MODULE 1: Variables & Types")
+print("=" * 50)
 
-# ── Exercise 1 ────────────────────────────────────────────────────────────────
-# Predict what this prints BEFORE running it. Then run it. Were you right?
+# ─────────────────────────────────────────────────
+print("\n--- LESSON 1: A variable is a name tag, not a box ---")
+# ─────────────────────────────────────────────────
 
+# In most languages, a variable is like a box: you put a value IN it.
+# In Python, a variable is a name tag that POINTS TO an object.
+# The object lives in memory. The name just references it.
+
+x = 5
+y = x       # y is now ANOTHER name tag pointing to the same 5
+x = 10      # x now points to 10. The original 5 object is untouched.
+
+print(f"x = {x}")   # 10
+print(f"y = {y}")   # still 5 — y was never tied to x, it pointed to the object
+
+print("\nThis matters a lot with lists (which are mutable):")
 a = [1, 2, 3]
-b = a
+b = a           # b points to the SAME list object as a
 a.append(99)
-# TODO: what does b equal here? Write your prediction as a comment, then print b.
 
+print(f"a = {a}")   # [1, 2, 3, 99]
+print(f"b = {b}")   # [1, 2, 3, 99] — same object! b "saw" the change
 
-# ── Exercise 2 ────────────────────────────────────────────────────────────────
-# How do you make a TRUE copy of a list so that changes to one don't affect the other?
-# TODO: create a copy of `a` called `c`, then append 999 to `a`.
-# Verify that `c` is unchanged.
+print("\nProof — id() shows the memory address of an object:")
+print(f"id(a) = {id(a)}")
+print(f"id(b) = {id(b)}")
+print(f"Same object? {id(a) == id(b)}")
 
+input("\n>>> Press Enter to continue...")
 
-# ── Exercise 3 ────────────────────────────────────────────────────────────────
-# id() returns the memory address of an object.
-# TODO: print id(a) and id(b). Are they the same?
-# Now print id(a) and id(c). Are they the same?
+# ─────────────────────────────────────────────────
+print("\n--- LESSON 2: Mutable vs Immutable ---")
+# ─────────────────────────────────────────────────
 
+# Immutable = can NEVER be changed after creation: int, str, float, tuple, bool
+# Mutable   = CAN be changed in place:             list, dict, set
 
-# ── Exercise 4 ────────────────────────────────────────────────────────────────
-# Strings are immutable. Prove it.
-# TODO: create s = "hello". Try s[0] = "H". What happens and why?
-# (wrap it in try/except to catch the error and print a message explaining it)
+print("Strings are immutable. Watch:")
+s = "hello"
+print(f"Before: s = '{s}', id = {id(s)}")
+s = s + " world"   # This does NOT change the string. It creates a NEW one.
+print(f"After:  s = '{s}', id = {id(s)}")
+print("The id changed — it's a completely different object in memory.")
 
+print("\nLists are mutable. Watch:")
+lst = [1, 2, 3]
+print(f"Before: lst = {lst}, id = {id(lst)}")
+lst.append(4)
+print(f"After:  lst = {lst}, id = {id(lst)}")
+print("The id stayed the same — the SAME object was modified.")
 
-# ── Exercise 5 ────────────────────────────────────────────────────────────────
-# Python reuses small integer objects (a quirk called "integer interning").
-# TODO: check if `x = 5` and `y = 5` share the same id. Do they?
-# Now try with x = 1000, y = 1000. Do they?
-# What does this tell you about how Python manages memory?
+input("\n>>> Press Enter to continue...")
 
+# ─────────────────────────────────────────────────
+print("\n--- LESSON 3: Types live on objects, not variables ---")
+# ─────────────────────────────────────────────────
 
-# ── Exercise 6 ────────────────────────────────────────────────────────────────
-# TODO: write a function called `what_type` that takes any value and prints:
-#   "Value: <value>, Type: <type>, Mutable: yes/no"
-# Call it with: 42, "hello", [1,2,3], (1,2,3), {"key": "val"}, None
+# The name tag has no type. The object it points to does.
+thing = 42
+print(f"thing = {thing}, type = {type(thing)}")
 
-def what_type(value):
-    pass  # replace this
+thing = "now it's a string"
+print(f"thing = {thing}, type = {type(thing)}")
+
+thing = [1, 2, 3]
+print(f"thing = {thing}, type = {type(thing)}")
+
+print("\nCheck types with type() or isinstance():")
+print(f"isinstance(42, int)   = {isinstance(42, int)}")
+print(f"isinstance(42, str)   = {isinstance(42, str)}")
+print(f"isinstance(42, (int, float)) = {isinstance(42, (int, float))}")  # check multiple
+
+input("\n>>> Press Enter to continue...")
+
+# ─────────────────────────────────────────────────
+print("\n--- LESSON 4: None ---")
+# ─────────────────────────────────────────────────
+
+# None means "no value". There is only ONE None object in all of Python.
+x = None
+y = None
+print(f"x is y: {x is y}")   # True — they literally point to the same object
+
+# Always use `is` to check for None, not ==
+# `is` checks identity (same object), `==` checks equality (same value)
+if x is None:
+    print("x is None")
+
+input("\n>>> Press Enter to continue...")
+
+# ─────────────────────────────────────────────────
+print("\n--- YOUR TURN ---")
+# ─────────────────────────────────────────────────
+
+print("""
+Try these one at a time. Edit this file, uncomment a line, save, and run.
+
+1. Make two lists that are INDEPENDENT copies (changing one doesn't affect the other).
+   Hint: try  b = a.copy()  instead of  b = a
+
+2. Uncomment this and predict what happens before running:
+   # s = "hello"
+   # try:
+   #     s[0] = "H"
+   # except TypeError as e:
+   #     print(f"Error: {e}")
+
+3. Uncomment this and explain the result in a comment:
+   # x = 5
+   # y = 5
+   # print(id(x) == id(y))   # True or False?
+   #
+   # x = 1000
+   # y = 1000
+   # print(id(x) == id(y))   # True or False? Why different?
+
+Edit the file, uncomment the blocks above, save, and run again.
+""")

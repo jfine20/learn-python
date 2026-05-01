@@ -1,55 +1,136 @@
-# Module 05 — Dicts & Sets
-# Run: python 05_dicts_and_sets/exercise.py
+print("=" * 50)
+print("MODULE 5: Dicts & Sets")
+print("=" * 50)
 
-# ── Exercise 1 ────────────────────────────────────────────────────────────────
-# Only hashable (immutable) objects can be dict keys.
-# TODO: try using a list as a dict key and catch the TypeError.
-# Then try a tuple. Then explain in a comment why tuples work but lists don't.
+# ─────────────────────────────────────────────────
+print("\n--- LESSON 1: Why dict lookups are instant ---")
+# ─────────────────────────────────────────────────
 
+# A dict is backed by a HASH TABLE.
+# When you do d["key"], Python:
+#   1. Calls hash("key") → converts the key to a number
+#   2. Uses that number to jump directly to the right memory slot
+#   3. Returns the value
+#
+# This is O(1) — same speed whether the dict has 10 or 10 million items.
+# A list lookup by value is O(n) — it checks every item until it finds it.
 
-# ── Exercise 2 ────────────────────────────────────────────────────────────────
-# Safe access patterns.
-user = {"name": "Jack", "role": "founder"}
-# TODO:
-#   a) get the "name" key
-#   b) get a "missing" key without crashing — return "unknown" as default
-#   c) get "missing" using a conditional expression (not .get) — one line
+print("Hash values (what Python computes internally for keys):")
+for key in ["hello", "world", 42, (1, 2)]:
+    print(f"  hash({key!r:12}) = {hash(key)}")
 
+print("\nOnly IMMUTABLE objects can be keys (their hash must never change):")
+d = {}
+d["string key"] = "works"
+d[42]           = "works"
+d[(1, 2)]       = "works"   # tuple works if contents are immutable
+print(f"  Valid keys: {list(d.keys())}")
 
-# ── Exercise 3 ────────────────────────────────────────────────────────────────
-# Dict comprehension.
-words = ["apple", "banana", "cherry", "kiwi"]
-# TODO: build a dict mapping each word to its length: {"apple": 5, ...}
+try:
+    d[[1, 2]] = "fails"
+except TypeError as e:
+    print(f"  List as key → TypeError: {e}")
 
+input("\n>>> Press Enter to continue...")
 
-# ── Exercise 4 ────────────────────────────────────────────────────────────────
-# Count word frequencies using a dict.
-text = "the cat sat on the mat the cat sat"
-# TODO: build a dict: {"the": 3, "cat": 2, ...}
-# Do it manually with a loop first. Then try collections.Counter as a shortcut.
+# ─────────────────────────────────────────────────
+print("\n--- LESSON 2: Reading from dicts safely ---")
+# ─────────────────────────────────────────────────
 
+user = {"name": "Jack", "role": "founder", "age": 28}
 
-# ── Exercise 5 ────────────────────────────────────────────────────────────────
-# Sets for deduplication and membership.
-emails_a = {"alice@x.com", "bob@x.com", "carol@x.com"}
-emails_b = {"bob@x.com", "carol@x.com", "dave@x.com"}
+print("Direct access — crashes if key missing:")
+print(f"  user['name'] = {user['name']}")
 
-# TODO:
-#   a) who is in both lists? (intersection)
-#   b) everyone across both lists, no duplicates (union)
-#   c) who is only in list A? (difference)
-#   d) remove duplicates from: [1, 2, 2, 3, 3, 3, 4] using a set
+print("\n.get() — returns None (or a default) if key missing:")
+print(f"  user.get('name')        = {user.get('name')}")
+print(f"  user.get('salary')      = {user.get('salary')}")
+print(f"  user.get('salary', 0)   = {user.get('salary', 0)}")
 
+print("\nIterating:")
+for key, value in user.items():
+    print(f"  {key}: {value}")
 
-# ── Exercise 6 ────────────────────────────────────────────────────────────────
-# Nested dicts — representing structured data.
-users = {
-    "jack":  {"age": 28, "role": "founder"},
-    "alice": {"age": 34, "role": "engineer"},
-    "bob":   {"age": 22, "role": "intern"},
-}
-# TODO:
-#   a) print all usernames and their roles
-#   b) find all users older than 25
-#   c) add a new user "carol" with age 30, role "designer"
-#   d) safely get the "salary" field for "jack" without crashing
+print("\nDict comprehension:")
+lengths = {word: len(word) for word in ["apple", "banana", "kiwi"]}
+print(f"  word lengths: {lengths}")
+
+input("\n>>> Press Enter to continue...")
+
+# ─────────────────────────────────────────────────
+print("\n--- LESSON 3: Merging and updating dicts ---")
+# ─────────────────────────────────────────────────
+
+defaults = {"color": "blue", "size": "medium", "weight": 1.0}
+overrides = {"color": "red", "size": "large"}
+
+# Python 3.9+ merge with |
+merged = defaults | overrides
+print(f"  defaults | overrides = {merged}")
+print(f"  defaults unchanged   = {defaults}")
+
+# Update in place
+defaults.update(overrides)
+print(f"  after .update():     = {defaults}")
+
+input("\n>>> Press Enter to continue...")
+
+# ─────────────────────────────────────────────────
+print("\n--- LESSON 4: Sets ---")
+# ─────────────────────────────────────────────────
+
+# A set is like a dict with only keys (no values).
+# Same hash table, same O(1) lookup.
+# Primary uses: deduplication, membership testing, set math.
+
+print("Deduplication:")
+with_dupes = [1, 2, 2, 3, 3, 3, 4]
+unique = list(set(with_dupes))
+print(f"  {with_dupes} → {unique}")
+
+print("\nMembership — sets are MUCH faster than lists for `in` checks:")
+big_list = list(range(1_000_000))
+big_set  = set(range(1_000_000))
+# Checking `999_999 in big_list` scans up to 1M items
+# Checking `999_999 in big_set` is one hash lookup
+print(f"  999999 in set:  {999999 in big_set}")
+
+print("\nSet operations:")
+a = {"alice", "bob", "carol"}
+b = {"bob", "carol", "dave"}
+print(f"  a = {a}")
+print(f"  b = {b}")
+print(f"  a & b (intersection) = {a & b}")   # in both
+print(f"  a | b (union)        = {a | b}")   # in either
+print(f"  a - b (difference)   = {a - b}")   # in a but not b
+print(f"  a ^ b (symmetric diff) = {a ^ b}") # in one but not both
+
+input("\n>>> Press Enter to continue...")
+
+# ─────────────────────────────────────────────────
+print("\n--- YOUR TURN ---")
+# ─────────────────────────────────────────────────
+
+print("""
+Add your code below. Save and run after each one.
+
+1. Count word frequencies. Given:
+     text = "the cat sat on the mat the cat sat"
+   Build a dict: {"the": 3, "cat": 2, ...}
+   Do it with a loop and .get(), then check your answer using collections.Counter.
+
+2. Given this list of users, find all users whose role is "engineer":
+     users = [
+         {"name": "Alice", "role": "engineer"},
+         {"name": "Bob",   "role": "founder"},
+         {"name": "Carol", "role": "engineer"},
+     ]
+   Use a list comprehension.
+
+3. You have two sets of email addresses:
+     list_a = {"alice@x.com", "bob@x.com", "carol@x.com"}
+     list_b = {"bob@x.com", "carol@x.com", "dave@x.com"}
+   Print: who is in BOTH lists, who is ONLY in list_a, everyone combined.
+""")
+
+# YOUR CODE HERE ↓
